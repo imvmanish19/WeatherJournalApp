@@ -23,16 +23,16 @@ app.use(express.static('website'));
 
 // Setup Server
 
-const port = 8000;
+const port = 4000;
 const server = app.listen(port, () => {
     console.log(`Server Running at Port ${port}`);
 });
 
-app.get('/all', (request,response) => {
+app.get('/', (request,response) => {
     response.send(projectData);
 });
 
-app.post('/add', (request,response) => {
+app.post('/', (request,response) => {
     newData = {
         temperature: request.body.temperature,
         date: request.body.date,
