@@ -23,7 +23,7 @@ app.use(express.static('website'));
 
 // Setup Server
 
-const port = 4000;
+const port = 8000;
 const server = app.listen(port, () => {
     console.log(`Server Running at Port ${port}`);
 });
@@ -34,10 +34,11 @@ app.get('/', (request,response) => {
 
 app.post('/', (request,response) => {
     newData = {
-        temperature: request.body.temperature,
+        temperature: request.body.temp,
         date: request.body.date,
         userResponse: request.body.userResponse
     }
 
-    projectData.unshift(newData);
+    projectData = newData;
+    console.log(projectData);
 });

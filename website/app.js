@@ -1,56 +1,69 @@
-/* Global Variables */
+//Global Variables
+const baseURL = 'https://api.openweathermap.org/data/2.5/weather?zip=';
 const apiKey = '&appid=2eb7f9289b3e6ee8b9d43ec77776e0fa';
-const baseURL = 'http://api.openweathermap.org/data/2.5/weather?zip=';
 
 // Create a new date instance dynamically with JS
 let d = new Date();
 let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
 
-//Get Data Client Side
-const getData =async (url = '') => {
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        return data;
-    }
-    catch(err) {
-        console.log(err);
-    }
-};
+//Reference Of Generate Button
 
-//Post Data 
-const postData = async (url = '',data = {}) => {
-    const response = await fetch(url, {
-        method: 'POST',
-        mode: 'cors',
-        credentials: 'same-origin',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data)
+let generateButton = document.getElementById('generate');
+
+generateButton.addEventListener('click',magicFunction);
+
+//Function to do the work 
+
+function magicFunction(event) {
+    let zipCode = document.getElementById('zip').value;
+    let feelings = document.getElementById('feelings').value;
+    getWeatherData(baseURL+zipCode+apiKey);
+}
+
+
+const getWeatherData = async (url='') => {
+    //Variables Required
+    let dataStore = {};
+    let feelings = document.getElementById('feelings').value;
+    //Fetching Data From Open Weather Map API
+    await fetch(url)
+    .then((res) => res.json())
+    .then((data) => {
+        dataStore = {
+            temp: data.main.temp,
+            date: newDate,
+            userResponse: feelings
+        }
+        console.log(dataStore);
     });
-};
 
-const updateUI = async () => {
-    const projectData = await getData('/');
-    document.getElementById('date').innerHTML = newDate;
-    document.getElementById('temp').innerHTML = `${projectData.temperature} &#8457`;
-    document.getElementById('content').innerHTML = projectData.feelings;
-};
-
-const generateData = async () => {
-    const feelings = document.getElementById('feelings').value;
-    const zip = document.getElementById('zip').value;
-    const response = await fetch(`${baseURL}${zip}${apiKey}`);
-    try {
-        const data = await response.json();
-        data.feelings = feelings;
-        data.date = newDate;
-        await postData('/', data);
-        updateUI();
-    } catch (error) {
-        console.error("error", error);
+    options = {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(dataStore)
     }
-};
 
-document.getElementById('generate').addEventListener('click', generateData);
+    updateUI('/',dataStore);
+
+    //Post Request
+    const postResponse = await fetch('/',options);
+    
+}
+
+const updateUI = (url = '',dataStore) => {
+
+    let date = document.getElementById('date');
+    let temp = document.getElementById('temp');
+    let content = document.getElementById('content');
+
+    date.innerHTML = dataStore.date;
+    temp.innerHTML = dataStore.temp;
+    content.innerHTML = dataStore.userResponse; 
+}
+
+
+
+
+
